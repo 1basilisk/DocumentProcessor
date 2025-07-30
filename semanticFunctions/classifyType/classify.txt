@@ -1,0 +1,15 @@
+You are a smart assistant trained to identify the type of document based on its content.
+
+Document:
+{{$input}}
+
+Based on the document text above, classify it into one of the following categories:
+- Aadhar
+- PAN
+- Policy
+- Invoice
+- Other
+
+
+
+Respond ONLY with the document type from the list above.

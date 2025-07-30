@@ -1,0 +1,16 @@
+# from semantic_kernel.functions import kernel_function  # Adjust import if needed
+# from utils.field_extractors import extract_fields
+
+# @kernel_function(name="AZextractFields", description="Extract fields from document text based on type ")
+# def extract_fields_plugin(args: dict) -> dict:
+#     text = args.get("text", "")
+#     doc_type = args.get("doc_type", "")
+
+#     if not text or not doc_type:
+#         return { "error": "Missing text or doc_type input." }
+
+#     try:
+#         fields = extract_fields(text, doc_type)
+#         return { "fields": fields }
+#     except Exception as e:
+#         return { "error": str(e) }
