@@ -1,0 +1,81 @@
+import asyncio
+import ctypes
+import logging
+import os
+from typing import Annotated
+from dotenv import load_dotenv
+from semantic_kernel.functions import kernel_function
+from semantic_kernel import Kernel
+from semantic_kernel.utils.logging import setup_logging
+from semantic_kernel.functions import kernel_function
+from semantic_kernel.connectors.ai.open_ai import AzureChatCompletion
+from semantic_kernel.connectors.ai.function_choice_behavior import FunctionChoiceBehavior
+from semantic_kernel.connectors.ai.chat_completion_client_base import ChatCompletionClientBase
+from semantic_kernel.contents.chat_history import ChatHistory
+from semantic_kernel.functions.kernel_arguments import KernelArguments
+from semantic_kernel.prompt_template import PromptTemplateConfig
+
+from semantic_kernel.connectors.ai.open_ai.prompt_execution_settings.azure_chat_prompt_execution_settings import (
+    AzureChatPromptExecutionSettings,
+)
+
+def initialize_kernel():
+    load_dotenv()
+    kernel = Kernel()
+
+    chat_completion = AzureChatCompletion(
+    
+        deployment_name="gpt-4.1-nano",
+        api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+        base_url=os.getenv("AZURE_OPENAI_ENDPOINT"),
+    )
+    kernel.add_service( chat_completion)
+
+    return kernel
+
+async def main():
+    load_dotenv()
+    kernel = Kernel()
+
+    chat_completion = AzureChatCompletion(
+    
+        deployment_name="gpt-4.1-nano",
+        api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+        base_url=os.getenv("AZURE_OPENAI_ENDPOINT"),
+    )
+    kernel.add_service( chat_completion)
+    
+
+    history = ChatHistory()
+    execution_settings = AzureChatPromptExecutionSettings()
+    execution_settings.function_choice_behavior = FunctionChoiceBehavior.Auto()
+    # Initiate a back-and-forth chat
+    userInput = None
+    while True:
+        # Collect user input
+        userInput = input("User > ")
+
+        # Terminate the loop if the user says "exit"
+        if userInput == "exit":
+            break
+
+        # Add user input to the history
+        history.add_user_message(userInput)
+
+        # Get the response from the AI
+        result = await chat_completion.get_chat_message_content(
+            chat_history=history,
+            settings=execution_settings,
+            kernel=kernel,
+        )
+
+        # Print the results
+        print("Assistant > " + str(result))
+
+        # Add the message from the agent to the chat history
+        history.add_message(result)
+
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
